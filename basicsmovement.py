@@ -25,7 +25,7 @@ tello = Tello()
 
 
 # simulate 1 grid cell = 50 cm
-step_size_cm = 10
+step_size_cm = 30
 z = 50  # fixed height in cm
 
 
@@ -61,8 +61,9 @@ try:
 
         # Calculate the distance to move forward
         distance = int((dx**2 + dy**2)**0.5)
-
+        time.sleep(2)
         # Move forward
+        print(distance)
         tello.move_forward(distance)
         time.sleep(2)
 
