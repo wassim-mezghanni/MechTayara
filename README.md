@@ -1,4 +1,4 @@
-# Mech Tayra
+# Mech Tayara
 # Autonomous DJI Tello Drone Navigation with Obstacle Avoidance
 
 This project implements an autonomous drone navigation system for the DJI Tello quadcopter. It uses a grid-based map, real-time obstacle detection via computer vision, and the A* pathfinding algorithm to enable safe navigation in an indoor prototype environment modeled after TUM Campus Heilbronn.
