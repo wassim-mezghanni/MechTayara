@@ -49,7 +49,7 @@ tello_drone_project/
 Clone the project and install dependencies:
 
 ```bash
-git clone https://github.com/yourusername/tello-drone-navigation.git
+git clone https://github.com/wassim-mezghanni/MechTayara
 cd tello-drone-navigation
 pip install -r requirements.txt
 ```
