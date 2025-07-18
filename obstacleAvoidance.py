@@ -3,7 +3,7 @@ import time
 import heapq
 import cv2
 
-# Define the map grid (0 = free, 1 = obstacle)
+# the map grid (0 = free, 1 = obstacle)
 map_grid = [
     [0, 0, 0, 0],
     [1, 1, 0, 1],
@@ -13,10 +13,10 @@ map_grid = [
 ]
 
 start = (0, 0)
-goal = (4, 3)
+goal = (5, 4)
 directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 MOVE_DIST = 30
-OBSTACLE_THRESHOLD = 300
+OBSTACLE_THRESHOLD = 350
 
 # A* components
 def heuristic(a, b):
@@ -51,13 +51,43 @@ def confirm_obstacle(tello, retries=3):
     return count >= retries - 1  # Confirm obstacle
 
 # Visual detection placeholder
+# def detect_obstacle(frame):
+#     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+#     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+#     edges = cv2.Canny(blurred, 50, 150)
+#     h, w = edges.shape
+#     roi = edges[h//3:2*h//3, w//3:2*w//3]
+#     return cv2.countNonZero(roi) > OBSTACLE_THRESHOLD
 def detect_obstacle(frame):
+    """
+    Detect obstacles in the frame using brightness thresholding and edge detection.
+    """
+    # Convert to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # Apply Gaussian blur to reduce noise
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-    edges = cv2.Canny(blurred, 50, 150)
+
+    # Apply brightness thresholding to isolate potential obstacles
+    _, thresholded = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)
+
+    # Apply edge detection
+    edges = cv2.Canny(thresholded, 30, 100)
+
+    # Define the region of interest (ROI)
     h, w = edges.shape
     roi = edges[h//3:2*h//3, w//3:2*w//3]
-    return cv2.countNonZero(roi) > OBSTACLE_THRESHOLD
+
+    # Count non-zero pixels in the ROI
+    non_zero_count = cv2.countNonZero(roi)
+
+    # Debugging: Visualize the ROI and non-zero pixel count
+    cv2.rectangle(frame, (w//3, h//3), (2*w//3, 2*h//3), (0, 255, 0), 2)
+    cv2.putText(frame, f"Non-zero: {non_zero_count}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+    cv2.imshow("Obstacle Detection", frame)
+
+    # Return True if the non-zero pixel count exceeds the threshold
+    return non_zero_count > OBSTACLE_THRESHOLD
 
 # Initialize Tello
 tello = Tello()
@@ -65,6 +95,7 @@ tello.connect()
 tello.streamon()
 tello.takeoff()
 time.sleep(2)
+
 
 current_position = start
 path = a_star_search(map_grid, current_position, goal)
@@ -80,6 +111,7 @@ while path:
             print("Obstacle detected at:", next_position)
             map_grid[next_position[0]][next_position[1]] = 1
             path = a_star_search(map_grid, current_position, goal)
+            tello.land()
             break  # Break to restart with a new path
 
         x1, y1 = current_position
@@ -100,7 +132,7 @@ while path:
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     else:
-        break  # Exit while loop if we reached goal
+        break 
 
 print("Landing")
 tello.land()
