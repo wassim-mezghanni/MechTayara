@@ -55,15 +55,14 @@ pip install -r requirements.txt
 ```
 
 ## 🚀 Running the Project
-Power on the DJI Tello drone.
+1.Power on the DJI Tello drone.
 
-Connect your computer to the Tello Wi-Fi network.
+2.Connect your computer to the Tello Wi-Fi network.
 
-Run the main script:
+3.Run the main script:
 
-bash
-Copier
-Modifier
+```bash
 python main.py
+```
 The drone will take off, follow the computed path, detect obstacles, and re-plan its route as needed.
 
