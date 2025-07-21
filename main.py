@@ -7,7 +7,7 @@ tello = init_drone()
 current_position = start
 path = a_star_search(map_grid, current_position, goal)
 
-while path:
+while path and current_position != goal:
     for i in range(1, len(path)):
         next_position = path[i]
         frame = tello.get_frame_read().frame
@@ -18,9 +18,9 @@ while path:
             print("Obstacle detected at:", next_position)
             map_grid[next_position[0]][next_position[1]] = 1
             path = a_star_search(map_grid, current_position, goal)
-            break
+            break 
 
         move_drone(tello, current_position, next_position)
         current_position = next_position
-
+    
 safe_land(tello)
